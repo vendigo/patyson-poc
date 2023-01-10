@@ -10,6 +10,9 @@ class UpdateHandler {
 
     val START = "/start"
     val PROFILE = "/profile"
+    val ANSWER = "/answer"
+    val CANCEL = "/cancel"
+    val LEADERBOARD = "/leaderboard"
 
     fun handleUpdate(update: Update): BotApiMethod<*>? {
         return SendMessage(update.message.chatId.toString(), "Hello from Patyson Bot")

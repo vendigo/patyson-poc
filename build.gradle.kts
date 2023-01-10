@@ -15,9 +15,16 @@ repositories {
 	mavenCentral()
 }
 
+dependencyManagement {
+	imports {
+		mavenBom("com.google.cloud:spring-cloud-gcp-dependencies:3.4.1")
+	}
+}
+
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.telegram:telegrambots:6.4.0")
+	implementation("com.google.cloud:spring-cloud-gcp-data-datastore")
 
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
