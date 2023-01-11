@@ -7,5 +7,5 @@ import org.springframework.boot.runApplication
 class PatysonServiceApplication
 
 fun main(args: Array<String>) {
-	runApplication<PatysonServiceApplication>(*args)
+    runApplication<PatysonServiceApplication>(*args)
 }

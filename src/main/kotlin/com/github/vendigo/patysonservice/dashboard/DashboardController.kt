@@ -1,15 +1,20 @@
 package com.github.vendigo.patysonservice.dashboard
 
 import com.github.vendigo.patysonservice.bot.BotConfig
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RestController
+import com.github.vendigo.patysonservice.bot.BotConfigService
+import org.springframework.web.bind.annotation.*
 
 @RestController
-class DashboardController {
+@RequestMapping("/dashboard")
+class DashboardController(val configService: BotConfigService) {
 
-    @PostMapping("/dashboard/bot-config")
+    @PostMapping("/bot-config")
     fun editConfig(@RequestBody config: BotConfig) {
+        configService.saveConfig(config)
+    }
 
+    @GetMapping("/bot-config")
+    fun getConfig(): BotConfig {
+        return configService.getConfig()
     }
 }
