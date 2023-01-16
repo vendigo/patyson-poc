@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
 	id("org.springframework.boot") version "2.7.7"
 	id("io.spring.dependency-management") version "1.0.15.RELEASE"
+	id("org.springframework.experimental.aot") version "0.12.2"
 	kotlin("jvm") version "1.7.22"
 	kotlin("plugin.spring") version "1.7.22"
 }
@@ -13,6 +14,7 @@ java.sourceCompatibility = JavaVersion.VERSION_17
 
 repositories {
 	mavenCentral()
+	maven { url = uri("https://repo.spring.io/release") }
 }
 
 dependencyManagement {
@@ -43,4 +45,11 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+
+tasks.getByName<org.springframework.boot.gradle.tasks.bundling.BootBuildImage>("bootBuildImage") {
+	builder = "paketobuildpacks/builder:tiny"
+	environment = mapOf(
+		"BP_NATIVE_IMAGE" to "true"
+	)
 }
