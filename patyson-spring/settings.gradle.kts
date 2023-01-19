@@ -1,1 +1,1 @@
-rootProject.name = "patyson-service"
+rootProject.name = "patyson-spring"
