@@ -1,35 +1,18 @@
-import com.soywiz.klock.*
 import com.soywiz.korge.*
 import com.soywiz.korge.scene.*
-import com.soywiz.korge.tween.*
 import com.soywiz.korge.view.*
 import com.soywiz.korim.color.*
-import com.soywiz.korim.format.*
-import com.soywiz.korio.file.std.*
-import com.soywiz.korma.geom.*
-import com.soywiz.korma.interpolation.*
 
-suspend fun main() = Korge(width = 512, height = 910, bgcolor = Colors["#ffffff"]) {
-	val sceneContainer = sceneContainer()
+suspend fun main() = Korge(width = 500, height = 900, bgcolor = Colors["#ffffff"]) {
+    val sceneContainer = sceneContainer()
 
-	sceneContainer.changeTo({ MyScene() })
+    sceneContainer.changeTo({ MainScene() })
 }
 
-class MyScene : Scene() {
-	override suspend fun SContainer.sceneMain() {
-		val minDegrees = (-16).degrees
-		val maxDegrees = (+16).degrees
-
-		val image = image(resourcesVfs["patyson.png"].readBitmap()) {
-			rotation = maxDegrees
-			anchor(.5, .5)
-			scale(0.8)
-			position(256, 455)
-		}
-
-		while (true) {
-			image.tween(image::rotation[minDegrees], time = 1.seconds, easing = Easing.EASE_IN_OUT)
-			image.tween(image::rotation[maxDegrees], time = 1.seconds, easing = Easing.EASE_IN_OUT)
-		}
-	}
+class MainScene : Scene() {
+    override suspend fun SContainer.sceneMain() {
+        for (y in setOf(100, 220, 340, 460)) {
+            circle(radius = 50.0, fill = Colors.ORANGE, stroke = Colors.ORANGERED, strokeThickness = 5.0).xy(200.0, y.toDouble())
+        }
+    }
 }
