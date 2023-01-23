@@ -1,59 +1,88 @@
 import Phaser from 'phaser'
-import Sprite = Phaser.GameObjects.Sprite;
-
+import {Slot, SlotState} from "./Slot"
 
 export default class ArrowsScene extends Phaser.Scene {
-  constructor() {
-    super('arrows')
-  }
 
-  preload() {
-    this.load.image('arrow', 'assets/arrow.png')
-  }
+    private slots: Slot[]
 
-  create() {
-    this.createSlots(i => {
-      console.log(`Slot ${i} clicked`);
-    });
-
-    this.createArrows();
-
-  }
-
-  createArrows(): Sprite[] {
-    let arrows = [];
-    let y = 80;
-
-    for (let i = 0; i < 6; i++, y+= 90) {
-      let arrow = this.add.sprite(200, y, 'arrow');
-      arrow.scale = 0.20;
-
-      if (i == 2) {
-        y+= 90;
-      }
-
-      if (i < 3) {
-        arrow.setAngle(180)
-      }
-      arrows.push(arrow);
+    constructor() {
+        super('arrows')
+        this.slots = []
     }
 
-    return arrows;
-  }
-
-  createSlots(slotClicked: (i: number) => void) {
-    let y = 80;
-
-    for (let i = 0; i < 7; i++, y += 90) {
-      let circle = new Phaser.Geom.Circle(200, y, 40);
-      let slot = this.add.graphics({fillStyle: {color: 0xA8DADC}, lineStyle: {color: 0x457B9D, width: 4}})
-        .setInteractive(circle, Phaser.Geom.Circle.Contains);
-      slot.fillCircleShape(circle);
-      slot.strokeCircleShape(circle);
-
-      slot.on('pointerdown', () => {
-        slotClicked(i);
-      });
+    preload() {
+        this.load.image('arrow', 'assets/arrow.png')
     }
-  }
+
+    create() {
+        this.createSlots()
+
+        const restartButton = this.add.text(5, 5, 'Restart', {
+            fontSize: "3em",
+            color: "000000"
+        }).setInteractive();
+        restartButton.on('pointerdown', () => {
+            this.restart()
+        })
+    }
+
+    createSlots() {
+        let y = 80
+        this.slots = []
+
+        for (let i = 0; i < 7; i++, y += 90) {
+            this.slots.push(new Slot(this, 200, y, this.getInitialSlotState(i), () => {
+                this.makeMove(i)
+            }))
+        }
+    }
+
+    getInitialSlotState(i: number): SlotState {
+        if (i < 3) {
+            return SlotState.DOWN
+        } else if (i == 3) {
+            return SlotState.EMPTY
+        }
+        return SlotState.UP
+    }
+
+    makeMove(i: number) {
+        const slot = this.slots[i];
+        if (slot.slotState == SlotState.EMPTY) {
+            return
+        }
+
+        if (slot.slotState == SlotState.DOWN) {
+            if (i < 6 && this.slots[i + 1].slotState == SlotState.EMPTY) {
+                this.move(SlotState.DOWN, i, i + 1)
+                return
+            }
+            if (i < 5 && this.slots[i + 2].slotState == SlotState.EMPTY) {
+                this.move(SlotState.DOWN, i, i + 2)
+                return
+            }
+        }
+
+        if (slot.slotState == SlotState.UP) {
+            if (i > 0 && this.slots[i - 1].slotState == SlotState.EMPTY) {
+                this.move(SlotState.UP, i, i - 1)
+                return
+            }
+            if (i > 1 && this.slots[i - 2].slotState == SlotState.EMPTY) {
+                this.move(SlotState.UP, i, i - 2)
+                return
+            }
+        }
+    }
+
+    move(direction: SlotState, from: number, to: number) {
+        this.slots[from].changeState(SlotState.EMPTY)
+        this.slots[to].changeState(direction)
+    }
+
+    restart() {
+        for (let i = 0; i < 7; i++) {
+            this.slots[i].changeState(this.getInitialSlotState(i))
+        }
+    }
 }
