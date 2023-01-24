@@ -5,12 +5,13 @@ import { EventType, GameEvent, GameEventResponse, GameStatus } from "./GameApiMo
 import { Modal } from "./Modal";
 
 //const API_URL = 'https://patyson-service-cwros3uhva-lz.a.run.app/api/game'
-const API_URL = 'http://localhost:8080/api/game'
+const API_URL = '/api/game'
 const GAME_NAME = 'test_game_1'
 
 export default class ArrowsScene extends Phaser.Scene {
 
   private slots: Slot[]
+  //@ts-ignore
   private winModal: Modal
   //@ts-ignore
   private restartButton: Button
@@ -31,6 +32,7 @@ export default class ArrowsScene extends Phaser.Scene {
     this.winModal = new Modal(this, 'Перемога')
 
     //@ts-ignore
+    //TODO: Remove this button
     const winButton = new Button(this, 100, 30, 50, 'restart', () => this.reportWin())
   }
 
