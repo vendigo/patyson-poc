@@ -1,88 +1,130 @@
 import Phaser from 'phaser'
-import {Slot, SlotState} from "./Slot"
+import { Slot, SlotState } from './Slot'
+import { Button } from './Button'
+import { EventType, GameEvent, GameEventResponse, GameStatus } from "./GameApiModel";
+import { Modal } from "./Modal";
+
+//const API_URL = 'https://patyson-service-cwros3uhva-lz.a.run.app/api/game'
+const API_URL = 'http://localhost:8080/api/game'
+const GAME_NAME = 'test_game_1'
 
 export default class ArrowsScene extends Phaser.Scene {
 
-    private slots: Slot[]
+  private slots: Slot[]
+  private winModal: Modal
+  //@ts-ignore
+  private restartButton: Button
 
-    constructor() {
-        super('arrows')
-        this.slots = []
+  constructor() {
+    super('arrows')
+    this.slots = []
+  }
+
+  preload() {
+    this.load.image('arrow', 'assets/arrow.png')
+    this.load.image('restart', 'assets/restart.png')
+  }
+
+  create() {
+    this.createSlots()
+    this.restartButton = new Button(this, 30, 30, 50, 'restart', () => this.restart())
+    this.winModal = new Modal(this, 'Перемога')
+
+    //@ts-ignore
+    const winButton = new Button(this, 100, 30, 50, 'restart', () => this.reportWin())
+  }
+
+  createSlots() {
+    let y = 80
+    this.slots = []
+
+    for (let i = 0; i < 7; i++, y += 90) {
+      this.slots.push(new Slot(this, 200, y, this.getInitialSlotState(i), () => {
+        this.makeMove(i)
+      }))
+    }
+  }
+
+  getInitialSlotState(i: number): SlotState {
+    if (i < 3) {
+      return SlotState.DOWN
+    } else if (i == 3) {
+      return SlotState.EMPTY
+    }
+    return SlotState.UP
+  }
+
+  makeMove(i: number) {
+    const slot = this.slots[i];
+    if (slot.slotState == SlotState.EMPTY) {
+      return
     }
 
-    preload() {
-        this.load.image('arrow', 'assets/arrow.png')
+    if (slot.slotState == SlotState.DOWN) {
+      if (i < 6 && this.slots[i + 1].slotState == SlotState.EMPTY) {
+        this.move(SlotState.DOWN, i, i + 1)
+        return
+      }
+      if (i < 5 && this.slots[i + 2].slotState == SlotState.EMPTY) {
+        this.move(SlotState.DOWN, i, i + 2)
+        return
+      }
     }
 
-    create() {
-        this.createSlots()
-
-        const restartButton = this.add.text(5, 5, 'Restart', {
-            fontSize: "3em",
-            color: "000000"
-        }).setInteractive();
-        restartButton.on('pointerdown', () => {
-            this.restart()
-        })
+    if (slot.slotState == SlotState.UP) {
+      if (i > 0 && this.slots[i - 1].slotState == SlotState.EMPTY) {
+        this.move(SlotState.UP, i, i - 1)
+        return
+      }
+      if (i > 1 && this.slots[i - 2].slotState == SlotState.EMPTY) {
+        this.move(SlotState.UP, i, i - 2)
+        return
+      }
     }
+  }
 
-    createSlots() {
-        let y = 80
-        this.slots = []
+  move(direction: SlotState, from: number, to: number) {
+    this.slots[from].changeState(SlotState.EMPTY)
+    this.slots[to].changeState(direction)
+    if (this.isWin()) {
+      this.reportWin()
+    }
+  }
 
-        for (let i = 0; i < 7; i++, y += 90) {
-            this.slots.push(new Slot(this, 200, y, this.getInitialSlotState(i), () => {
-                this.makeMove(i)
-            }))
+  restart() {
+    this.winModal.hide()
+    for (let i = 0; i < 7; i++) {
+      this.slots[i].changeState(this.getInitialSlotState(i))
+    }
+  }
+
+  reportWin() {
+    const gameEvent = new GameEvent(GAME_NAME, 110, EventType.COMPLETE);
+
+    fetch(API_URL, {
+      method: 'POST',
+      body: JSON.stringify(gameEvent),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8'
+      }
+    }).then(response => response.json())
+      .then((response: GameEventResponse) => {
+        if (response.status == GameStatus.COMPLETED) {
+          this.winModal.show()
         }
+      });
+  }
+
+  isWin(): boolean {
+    return this.slots.every((slot, pos) => this.isCorrectState(slot.slotState, pos))
+  }
+
+  isCorrectState(actualState: SlotState, pos: number): boolean {
+    if (pos < 3) {
+      return actualState == SlotState.UP
+    } else if (pos == 3) {
+      return actualState == SlotState.EMPTY
     }
-
-    getInitialSlotState(i: number): SlotState {
-        if (i < 3) {
-            return SlotState.DOWN
-        } else if (i == 3) {
-            return SlotState.EMPTY
-        }
-        return SlotState.UP
-    }
-
-    makeMove(i: number) {
-        const slot = this.slots[i];
-        if (slot.slotState == SlotState.EMPTY) {
-            return
-        }
-
-        if (slot.slotState == SlotState.DOWN) {
-            if (i < 6 && this.slots[i + 1].slotState == SlotState.EMPTY) {
-                this.move(SlotState.DOWN, i, i + 1)
-                return
-            }
-            if (i < 5 && this.slots[i + 2].slotState == SlotState.EMPTY) {
-                this.move(SlotState.DOWN, i, i + 2)
-                return
-            }
-        }
-
-        if (slot.slotState == SlotState.UP) {
-            if (i > 0 && this.slots[i - 1].slotState == SlotState.EMPTY) {
-                this.move(SlotState.UP, i, i - 1)
-                return
-            }
-            if (i > 1 && this.slots[i - 2].slotState == SlotState.EMPTY) {
-                this.move(SlotState.UP, i, i - 2)
-                return
-            }
-        }
-    }
-
-    move(direction: SlotState, from: number, to: number) {
-        this.slots[from].changeState(SlotState.EMPTY)
-        this.slots[to].changeState(direction)
-    }
-
-    restart() {
-        for (let i = 0; i < 7; i++) {
-            this.slots[i].changeState(this.getInitialSlotState(i))
-        }
-    }
+    return actualState == SlotState.DOWN
+  }
 }
