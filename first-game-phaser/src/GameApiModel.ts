@@ -8,8 +8,10 @@ export enum EventType {
 }
 
 export enum  GameStatus {
-  COMPLETED = "COMPLETED",
-  ATTEMPTED = "ATTEMPTED"
+  FIRST_COMPLETION = "FIRST_COMPLETION",
+  NEXT_COMPLETION = "NEXT_COMPLETION",
+  WRONG_ANSWER = "WRONG_ANSWER",
+  ERROR = "ERROR"
 }
 
 export class GameEvent {

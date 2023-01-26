@@ -1,8 +1,8 @@
 import Phaser from 'phaser'
-import { Slot, SlotState } from './Slot'
-import { Button } from './Button'
-import { EventType, GameEvent, GameEventResponse, GameStatus } from "./GameApiModel";
-import { Modal } from "./Modal";
+import {Slot, SlotState} from './Slot'
+import {Button} from './Button'
+import {EventType, GameEvent, GameEventResponse, GameStatus} from "./GameApiModel";
+import {Modal} from "./Modal";
 
 const API_URL = '/api/game'
 const GAME_NAME = 'arrows'
@@ -111,7 +111,7 @@ export default class ArrowsScene extends Phaser.Scene {
       }
     }).then(response => response.json())
       .then((response: GameEventResponse) => {
-        if (response.status == GameStatus.COMPLETED) {
+        if (response.status == GameStatus.FIRST_COMPLETION || response.status == GameStatus.NEXT_COMPLETION) {
           this.winModal.show()
         }
       });
