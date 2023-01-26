@@ -4,9 +4,9 @@ import { Button } from './Button'
 import { EventType, GameEvent, GameEventResponse, GameStatus } from "./GameApiModel";
 import { Modal } from "./Modal";
 
-//const API_URL = 'https://patyson-service-cwros3uhva-lz.a.run.app/api/game'
 const API_URL = '/api/game'
-const GAME_NAME = 'test_game_1'
+const GAME_NAME = 'arrows'
+const PLAYER_ID = 576107529
 
 export default class ArrowsScene extends Phaser.Scene {
 
@@ -101,7 +101,7 @@ export default class ArrowsScene extends Phaser.Scene {
   }
 
   reportWin() {
-    const gameEvent = new GameEvent(GAME_NAME, 110, EventType.COMPLETE);
+    const gameEvent = new GameEvent(GAME_NAME, PLAYER_ID, EventType.COMPLETE);
 
     fetch(API_URL, {
       method: 'POST',
