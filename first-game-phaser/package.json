@@ -13,9 +13,7 @@
 		"@typescript-eslint/parser": "^5.40.0",
 		"eslint": "^8.25.0",
 		"typescript": "^4.6.4",
-		"vite": "^3.2.5"
-	},
-	"dependencies": {
+		"vite": "^3.2.5",
 		"phaser": "^3.55.2"
 	}
 }

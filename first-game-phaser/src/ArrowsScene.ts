@@ -4,9 +4,8 @@ import {Button} from './Button'
 import {EventType, GameEvent, GameEventResponse, GameStatus} from "./GameApiModel";
 import {Modal} from "./Modal";
 
-const API_URL = '/api/game'
 const GAME_NAME = 'arrows'
-const PLAYER_ID = 576107529
+const PLAYER_ID = 1000000001
 
 export default class ArrowsScene extends Phaser.Scene {
 
@@ -29,7 +28,7 @@ export default class ArrowsScene extends Phaser.Scene {
   create() {
     this.createSlots()
     this.restartButton = new Button(this, 30, 30, 50, 'restart', () => this.restart())
-    this.winModal = new Modal(this, 'Перемога')
+    this.winModal = new Modal(this)
 
     //@ts-ignore
     //TODO: Remove this button
@@ -101,9 +100,9 @@ export default class ArrowsScene extends Phaser.Scene {
   }
 
   reportWin() {
-    const gameEvent = new GameEvent(GAME_NAME, PLAYER_ID, EventType.COMPLETE);
+    const gameEvent = new GameEvent(GAME_NAME, EventType.COMPLETE);
 
-    fetch(API_URL, {
+    fetch(`/api/user/${PLAYER_ID}/game`, {
       method: 'POST',
       body: JSON.stringify(gameEvent),
       headers: {
@@ -112,7 +111,7 @@ export default class ArrowsScene extends Phaser.Scene {
     }).then(response => response.json())
       .then((response: GameEventResponse) => {
         if (response.status == GameStatus.FIRST_COMPLETION || response.status == GameStatus.NEXT_COMPLETION) {
-          this.winModal.show()
+          this.winModal.show(response.reward)
         }
       });
   }

@@ -16,23 +16,21 @@ export enum  GameStatus {
 
 export class GameEvent {
   gameName: string;
-  userId: number;
   eventType: EventType;
   eventData?: string;
 
-  constructor(gameName: string, userId: number, eventType: EventType) {
+  constructor(gameName: string, eventType: EventType) {
     this.gameName = gameName;
-    this.userId = userId;
     this.eventType = eventType;
   }
 }
 
-export class GameAward {
+export class Reward {
   experience?: number;
   gold?: number;
 }
 
 export class GameEventResponse {
   status?: GameStatus;
-  award?: GameAward;
+  reward?: Reward;
 }
