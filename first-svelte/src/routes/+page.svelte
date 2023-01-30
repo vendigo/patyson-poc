@@ -1,2 +1,14 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
+<script>
+    let riddle = `Летіли гуси, а назустріч один.
+      - Здрастуйте, сто гусей, – каже.
+      - Нас не сто, а щоб було сто,
+      Треба ще стільки, та півстільки,
+      Та чверть стільки і ти один.
+      Скільки летіло гусей?`
+</script>
+
+<h3>Загадка Патисона</h3>
+<p>{riddle}</p>
+<form>
+
+</form>
